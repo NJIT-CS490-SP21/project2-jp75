@@ -9,3 +9,7 @@
 .box {
   border: 1px solid black; /* Shows the lines in the CSS grid */
 }
+
+.login{
+	text-align: center;
+}
