@@ -29,20 +29,10 @@ def on_connect():
 def on_disconnect():
     print('User disconnected!')
     
-@socketio.on('Player 1')
+@socketio.on('Logins')
 def on_Connection1(data):
     print(str(data))
-    socketio.emmit("Player1",data, broadcast=True, iclude_self=False)
-    
-@socketio.on('Player 2')
-def on_Connection2(data):
-    print(str(data))
-    socketio.emmit("Player2",data, broadcast=True, iclude_self=False)
-    
-@socketio.on('Spectator')
-def on_Connection3(data):
-    print(str(data))
-    socketio.emmit("Spectator",data, broadcast=True, iclude_self=False)
+    socketio.emmit("Logins",data, broadcast=True, iclude_self=False)
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
