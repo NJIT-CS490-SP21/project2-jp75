@@ -7,3 +7,11 @@ export function Tboard(props){
         );
     
 }
+export function player(props){
+    return(
+        
+        <div> {props.user} </div>
+        
+    );
+    
+}

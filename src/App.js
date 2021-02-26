@@ -7,32 +7,39 @@ import io from 'socket.io-client';
 const socket = io();
 
 function App() {
-    var player1moves = new Array;
-    var player2moves = new Array;
-    var loggedin = false;
+
+
     const [board, setBoard] = useState(Array(9).fill(null));
     const [counter, setCount] = useState(0);
     const [connected, setConnect] = useState([]);
     const [shown, setShown] = useState(false);
-    const [showButton, setButton] = useState(false);
     const [Player1, setArray1] = useState([]);
     const [Player2, setArray2] = useState([]);
-    const [hideSpec, setSpectator] = useState(true);
+    //const [hideSpec, setSpectator] = useState(false);
     const winner = calculateWinner(board);
     const inputRef = useRef(null);
+    const [logCount, setLogCount] = useState(0);
+    
+    
 
-
-    function onClickButton(player,index, itmNum) {
-        console.log("Players turn");
-        console.log("Player 1",player1,"Player2", player2);
-        console.log(player);
+    function onClickButton(player, index, countNum , Spectators) {
+        console.log("Player turn: ", player);
+        //console.log(player);
         //console.log(spectators);
-
-        setCount((prevCount) => prevCount + itmNum);
+        console.log("Spectators",Spectators);
+        
+        console.log("Watch: ",isSpectator(player));
+      
+      if(player == ['b']){              //This seems to work for my names that have a
+          
+       
+        setCount((prevCount) => prevCount + countNum);
         var letter = "";
         
-
-        if(counter % 2 == 0) {
+        console.log(isSpectator(player));
+       if(isSpectator(player) == false){
+            
+        if (counter % 2 == 0) {
             letter = "X";
             board[index] = letter;
             Player1.push(index);
@@ -40,15 +47,19 @@ function App() {
             calculateWinner(Player1);
             //player1moves.push(index);
         }
-        
-        else{
+
+        else {
             letter = "O";
             board[index] = letter;
             Player2.push(index);
             //console.log(Player2);
             calculateWinner(Player2);
             //player2moves.push(index)
-            }
+        }
+        
+        }
+        
+        
         console.log(counter);
         //setBoard(board => [...board]);
         setBoard(prevBoard => {
@@ -56,48 +67,55 @@ function App() {
             newBoard[index] = letter;
             return newBoard;
         });
+        
+        
         //console.log(board[item]);
         console.log(index);
-        socket.emit('Play', { index: index, letter: board, count: counter, num: itmNum, player1: Player1, player2: Player2 });
-    }
-    
-    function turn(player1,player2){
-        if(counter % 2 == 0){
-            return player1;
-        }
-        else{
-            return player2;
-        }
-        
-    }
-    
-    function spectators(connected){
-        var i;
-        var spectators = []
-        for(i=2; i < connected.length;i++){
-            spectators.push(connected[i]);
-        }
-        
-        for(i=0; i < spectators.length; i++){
-            isSpectator(spectators[i]);
-        
-           // return spectators;
-        }
+        socket.emit('Play', { index: index, letter: board, count: counter, player1: Player1, player2: Player2 });
+      }
     }
 
+    
+
+    function turn(player1, player2) {
+        if (counter % 2 == 0) {
+            return player1;
+        }
+        else {
+            return player2;
+        }
+
+    }
+
+    function spectators(connected) {
+        var i;
+        var spectators = []
+        for (i = 2; i < connected.length; i++) {
+            spectators.push(connected[i]);
+        }
+
+        return spectators;
+    }
+
+
     function loginButton() {
-        const username = inputRef.current.value;
+        var username = inputRef.current.value;
         if (username != "") {
-            loggedin = true;
-            setConnect(prevConn => [...prevConn,username]);
-            
-            socket.emit('Logins', { joined: username });
+        
+            setConnect(prevConn => [...prevConn, username]);
+            setLogCount((prevLog) => prevLog + 1 );
+            console.log(connected);
+            console.log("Length", connected.length);
+            //watch = ;
+            socket.emit('Logins', { joined: username, index: logCount });
             showBoard(); // shows the board if you click on login
-            console.log(username);
+ 
+
+
 
         }
         else {
-            loggedin = false;
+
             console.log("We got a false result");
         }
     }
@@ -106,17 +124,26 @@ function App() {
         setShown(true);
 
     }
-    
-    function isSpectator(spectator){
-        setSpectator(true);
+
+    function isSpectator(username) {
+        var i;
+        var specs = spectators(connected);
+        
+        for(i = 0; i < specs.length; i++){
+            console.log("Connected Array:", specs);
+            console.log("Array name:",specs[i]);
+            console.log("User Name:",username);
+            if(specs[i] == username){
+            return true;
+            }
+        
+            return false;
+        }
     }
     
-    function playerButtons(){
-        setButton(true);
-    }
+
 
     function calculateWinner(player) {
-        console.log(player);
         const possible = [
             [0, 1, 2],
             [3, 4, 5],
@@ -134,7 +161,7 @@ function App() {
                 return player[a];
             }
         }
-        
+
         return null;
     }
     useEffect(() => {
@@ -143,8 +170,9 @@ function App() {
         socket.on('Logins', (data) => {
             console.log('Players');
             //console.log(data.connected[0]);
-            setConnect(prevConn => 
-                [...prevConn,data.joined]);
+            setConnect(prevConn => [...prevConn, data.joined]);
+            setLogCount((prevLog) => (data.index + 1));
+
         });
 
 
@@ -162,12 +190,18 @@ function App() {
         });
     }, []);
 
-        const player1 = connected[0]; //player 1 = first name
-        const player2 = connected[1];
-        
+    const player1 = connected[0]; //player 1 = first name
+    const player2 = connected[1];
+    
+
+    var getSpecs = spectators(connected);
+    console.log(getSpecs, " is a spectator");
 
     console.log(player1, player2);
+    
     //console.log(hideSpec);
+   // const username = inputRef.current.value;
+   //console.log("current username",username);
 
     return (
 
@@ -179,28 +213,31 @@ function App() {
             <label for="name">Player Name:</label>
                 <br/>
             <input ref={inputRef} type="text" placeholder="username" />
-            <button type="submit" onClick={loginButton} class="buttn">Login</button>
+            <button type="submit" onClick={ () => loginButton(0)} class="buttn">Login</button>
         </div>
         ) : null}
         {shown === true ? (
         <div>
+         
          <div class="Players">It's {turn(player1,player2)}'s turn</div>
+         
     <div class="board">  
             {
             board.map(
                 (itm, idx) => 
                 <div class="box">
-                    {hideSpec === true ? (
-                    <button onClick={() => onClickButton(turn(player1,player2),idx,1)}> Click </button>
-                     ) : null}
+                    <button onClick={() => onClickButton(turn(player1,player2),idx,1, getSpecs)}> Click </button>
                     <Tboard letter={itm}/>
                 </div>
              )
             }
             </div>
        </div>     ) : null}
+       
+       
+       
     </div>
-    
+
     );
 
 }
