@@ -32,7 +32,8 @@ def on_disconnect():
 @socketio.on('Logins')
 def on_Connection1(data):
     print(str(data))
-    socketio.emmit("Logins",data, broadcast=True, iclude_self=False)
+    socketio.emit("Logins", data, broadcast=True, include_self=False)
+    #socketio.emit('joined', {'users': users})
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
