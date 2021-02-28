@@ -7,11 +7,20 @@ export function Tboard(props){
         );
     
 }
-export function player(props){
+export function User(props){
     return(
-        
-        <div> {props.user} </div>
-        
+        <div> {props.name} </div>
     );
     
 }
+
+export function LoginButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      Login
+    </button>
+  );
+}
+
+
+//<button type="submit" onClick={ () => loginButton(0)} class="buttn">Login</button>

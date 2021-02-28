@@ -1,3 +1,7 @@
+body{
+	background:grey;
+}
+
 .board {
 	text-align: center;
 	width: 300px; /* Total horizontal dimensions */
@@ -8,14 +12,22 @@
 }
 
 .box {
-  border: 1px solid black; /* Shows the lines in the CSS grid */
+	text-align:center;
+  border: 1px solid cyan; 
+  background: grey;/* Shows the lines in the CSS grid */
+  right:50%;
+  top: 50%;
+
 }
 
 .login{
+	
 	text-align: center;
+	background: grey;
 }
 
 .Players{
-	font-size: 20px;
+	text-align: center;
+	font-size: 35px;
 	font-weight: bold;
 }

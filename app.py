@@ -18,6 +18,7 @@ Player1 = ""
 Player2 = ""
 Spectators = []
 players = []
+users = {"PlayerX":"","PlayerO":"","Spectators":[]}
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
 def index(filename):
@@ -35,7 +36,7 @@ def on_disconnect():
     
 @socketio.on('Logins')
 def on_Connection1(data):
-    
+    global users
     global players
     global logins
     global Player1
@@ -43,6 +44,7 @@ def on_Connection1(data):
     print(str(data))
     logins.append(str(data['joined']))
     print(logins);
+    
     if(Player1 == ""):
         Player1 = logins[0]
         players.append(Player1)
@@ -57,18 +59,37 @@ def on_Connection1(data):
     print("Players: ", players)
     print("Spectators: ", Spectators)
     
-    socketio.emit("Logins", data ,broadcast=True, include_self=False)
+    if(users["PlayerX"] == ""):
+        users["PlayerX"] = players[0]
+    elif(users["PlayerO"] == ""):
+        users["PlayerO"] = players[1]
+        
+    else:
+        users["Spectators"] = Spectators
+
+
+    print(users)
     
+    
+    socketio.emit("Logins", data, broadcast=True, include_self=False)
+    
+    
+    print(Player1,"is X")
+    print(Player2, "is O")
+    print(Spectators, " are spectating the game")
 
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('Play')
-def on_click(players): # data is whatever arg you pass in your emit call on client
-    print(str(players))
+def on_click(data): # data is whatever arg you pass in your emit call on client
+    
+    print(str(data))
+    
+    
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('Play', players  , broadcast=True, include_self=False)
+    socketio.emit('Play', users , broadcast=True, include_self=True)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
