@@ -71,7 +71,7 @@ def on_Connection1(data):
     print(users)
     
     
-    socketio.emit("Logins", data, broadcast=True, include_self=False)
+    socketio.emit("Logins", data, broadcast=True, include_self=True)
     
     
     print(Player1,"is X")
@@ -83,13 +83,12 @@ def on_Connection1(data):
 # 'chat' is a custom event name that we just decided
 @socketio.on('Play')
 def on_click(data): # data is whatever arg you pass in your emit call on client
-    
     print(str(data))
     
     
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('Play', users , broadcast=True, include_self=True)
+    socketio.emit('Play', data , broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(

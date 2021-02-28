@@ -20,39 +20,30 @@ function App() {
     
     const [name,setUser] = useState([]);
     
-    
 
-    function onClickButton(player, index, countNum,props) {
-        
-        var X = 'X';
-        var O = 'O';
-        
-        
-        //if(user == player){
+    function onClickButton(player, index, countNum) {
+
+        console.log("Passed num", countNum);
         console.log("Player turn: ", player);
 
-        //console.log("Watch: ",isSpectator(player));
-      
       if(player ==  name){              //This seems to work for my names that have a
-         // if(current.click != spectator)
-       
-        setCount((prevCount) => prevCount + countNum);
+        
+        setCount((prevCount) => (prevCount + 1));
         console.log("counter", counter);
-        
-        
-        
-        
+       
         var letter = "";
         
-      
-            
         if (counter % 2 == 0) {
             letter = "X";
             board[index] = letter;
             Player1.push(index);
             //console.log(Player1);
-            calculateWinner(Player1);
-            //player1moves.push(index);
+
+            if(calculateWinner(Player1) == true){
+                alert(name," is the Winner!");
+            }
+            
+
         }
 
         else {
@@ -60,14 +51,11 @@ function App() {
             board[index] = letter;
             Player2.push(index);
             //console.log(Player2);
-            calculateWinner(Player2);
-            //player2moves.push(index)
+            if(calculateWinner(Player2) == true){
+                alert(name," is the Winner!");
+            }
         }
         
-      
-        
-        
-
         //setBoard(board => [...board]);
         setBoard(prevBoard => {
             const newBoard = [...prevBoard];
@@ -75,14 +63,14 @@ function App() {
             return newBoard;
         });
         
-        
         //console.log(board[item]);
         console.log(index);
-        socket.emit('Play', { index: index, letter: board, count: counter, player1: Player1, player2: Player2 });
+        socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum });
       }
 }
     
     function turn(player1, player2) {
+        console.log("Counter for turn", counter);
         if (counter % 2 == 0) {
             return player1;
         }
@@ -110,11 +98,10 @@ function App() {
     
             console.log("Current logins:", connected);
             console.log("Length", connected.length);
-            setUser(username);
             
             socket.emit('Logins', { joined: username });
             showBoard(); // shows the board if you click on login
-            
+            setUser(username);
         }
         else {
 
@@ -146,7 +133,10 @@ function App() {
             const [a, b, c] = possible[i];
             if (player[a] && player[a] === player[b] && player[a] === player[c]) {
                 console.log("You are a winner");
-                return player[a];
+                return true;
+            }
+            else{
+                return false;
             }
         }
 
@@ -168,7 +158,7 @@ function App() {
             console.log(data);
             // If the server sends a message (on behalf of another client), then we
             // add it to the list of messages to render it on the UI.
-            setCount((prevCount) => (data.num + data.count));
+            setCount(data.count + data.num);
             console.log("current count is", data.count);
 
             board[data.index] = data.letter;
@@ -182,13 +172,8 @@ function App() {
     console.log(getSpecs, " is a spectator");
 
     
-    //console.log(hideSpec);
-   // const username = inputRef.current.value;
-   //console.log("current username",username);
-   
-   //console.log(loginButton());
-   console.log("PLayername",<board User name={connected}/>);
   
+   console.log("Current connected users", connected);
    
    console.log("Username: ",name);
  
@@ -204,7 +189,8 @@ function App() {
             <label for="name">Player Name:</label>
                 <br/>
             <input ref={inputRef} type="text" placeholder="username" />
-            <board id="1" LoginButton onClick={loginButton}>Login</board>
+            <button type="submit" onClick={loginButton} class="buttn">Login</button>
+           
         </div>
         ) : null}
         
@@ -220,6 +206,7 @@ function App() {
                 <div class="box">
     
                     <button class="box" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}>click</button>
+                    
                     
               
                     <Tboard letter={itm}/>
