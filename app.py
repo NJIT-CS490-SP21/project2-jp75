@@ -79,6 +79,20 @@ def on_Connection1(data):
     print(Spectators, " are spectating the game")
 
 
+@socketio.on('Reset')
+def reset(data):
+    print(str(data))
+   
+    socketio.emit('Reset', data , broadcast=True, include_self=True) 
+    
+    
+@socketio.on('Winner')
+def winner(data):
+    print(str(data))
+    
+    socketio.emit('Winner', data, broadcast=True, include_self=False)
+    
+
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('Play')

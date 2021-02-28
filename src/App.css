@@ -3,26 +3,26 @@ body{
 }
 
 .board {
-	text-align: center;
 	width: 300px; /* Total horizontal dimensions */
 	height: 300px; /* Total vertical dimensions */
 	display: grid; /* Enables CSS Grid */ 
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-  grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+    grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+
 }
 
 .box {
-	text-align:center;
+  text-align:center;
   border: 1px solid cyan; 
   background: grey;/* Shows the lines in the CSS grid */
-  right:50%;
+  right:100%;
   top: 50%;
-
 }
 
 .login{
-	
+	font-size:25px;
 	text-align: center;
+	font-weight:bold;
 	background: grey;
 }
 
@@ -30,4 +30,24 @@ body{
 	text-align: center;
 	font-size: 35px;
 	font-weight: bold;
+}
+
+.reset{
+	text-align:center;
+  margin: auto;
+}
+
+.user{
+	font-weight: bold;
+	font-size:15px;
+}
+
+.winner{
+	text-align:center;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.center{
+	text-align:center;
 }
