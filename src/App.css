@@ -6,15 +6,21 @@ body{
 	width: 300px; /* Total horizontal dimensions */
 	height: 300px; /* Total vertical dimensions */
 	display: grid; /* Enables CSS Grid */ 
+	margin: 0 auto;
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-    grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+  grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+  
+  
 
 }
 
 .box {
   text-align:center;
   border: 1px solid cyan; 
+  color:cyan;
   background: grey;/* Shows the lines in the CSS grid */
+  justify-content: center;
+  align-items: center;
   right:100%;
   top: 50%;
 }
@@ -27,8 +33,9 @@ body{
 }
 
 .Players{
+	color:cyan;
 	text-align: center;
-	font-size: 35px;
+	font-size: 30px;
 	font-weight: bold;
 }
 

@@ -263,6 +263,8 @@ function App() {
          <div class="user"> Player2: {connected[1]} = "O" </div>
          <div> Spectators: {getSpecs} </div>
          
+         <br/>
+         
          {winner == "winner"
          ? null  
          :<div class="Players">It's {turn(connected[0],connected[1])}'s turn</div>}
