@@ -36,14 +36,16 @@ function App() {
 
         if (player == name) { //This seems to work for my names that have a
         
-        
+        console.log("board: ", board[index]);
+
+            if(board[index] == null){
+
             setMoves((prevMove) => [player]);
-            
+
             setCount((prevCount) => (prevCount + 1));
             //console.log("counter", counter);
 
             var letter = "";
-            
             if (counter % 2 == 0) {
                 letter = "X";
                 board[index] = letter;
@@ -56,10 +58,10 @@ function App() {
                 letter = "O";
                 board[index] = letter;
                 Player2.push(index);
-                calculateWinner(Player2,player);
+                calculateWinner(Player2, player);
                 //console.log(Player2);
             }
-            
+
 
             //setBoard(board => [...board]);
             setBoard(prevBoard => {
@@ -67,16 +69,17 @@ function App() {
                 newBoard[index] = letter;
                 return newBoard;
             });
-            
-            if (clickedBoxes(board) == true) {          //emits that there was a draw
+
+            if (clickedBoxes(board) == true) { //emits that there was a draw
                 console.log("Its a draw...");
-                socket.emit("Winner", {Draw: 'draw'});
-             }
-            
+                socket.emit("Winner", { Draw: 'draw' });
+            }
+
 
             //console.log(board[item]);
             console.log(index);
-            socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum , Move: player });
+            socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum, Move: player });
+            }
         }
     }
 
@@ -154,25 +157,26 @@ function App() {
     }
 
     function clickedBoxes(board) {
-    // Declare variable to store number of clicked boxes.
-    var count = 0;
+        // Declare variable to store number of clicked boxes.
+        var count = 0;
 
-    // Iterate over all boxes
-    board.forEach(function (item) {
-        // Check if box is clicked (not null)
-        if (item !== null) {
-            // If yes, increase the value of count by 1
-            count++;
+        // Iterate over all boxes
+        board.forEach(function(item) {
+            // Check if box is clicked (not null)
+            if (item !== null) {
+                // If yes, increase the value of count by 1
+                count++;
+            }
+        });
+
+        // Check if all boxes are clicked (filled)
+        if (count === 9) {
+            return true;
         }
-    });
-
-    // Check if all boxes are clicked (filled)
-    if (count === 9) {
-        return true;
-    } else {
-        return false;
+        else {
+            return false;
+        }
     }
-}
 
     useEffect(() => {
 
@@ -215,7 +219,7 @@ function App() {
 
 
     }, []);
-    
+
 
     var getSpecs = spectators(connected);
 
@@ -228,7 +232,7 @@ function App() {
     console.log("Username: ", name);
 
     var login = name;
-    
+
     //console.log(<board User name={moves[moves.length-2]}/>['props']['name']);
 
     return (
@@ -270,8 +274,6 @@ function App() {
                     { winner == "winner"
                     ? null 
                     :<button class="box" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}>click</button> }
-                    
-                    
               
                     <Tboard letter={itm}/>
                     
