@@ -12,9 +12,8 @@ function App() {
     const [counter, setCount] = useState(0);
     const [connected, setConnect] = useState([]);
     const [shown, setShown] = useState(false);
-    const [Player1, setArray1] = useState([]);
-    const [Player2, setArray2] = useState([]);
-    const [gameEnd, setGameEnd] = useState(false);
+    const [Player1] = useState([]);
+    const [Player2] = useState([]);
     //const [hideSpec, setSpectator] = useState(false);
     const winner = calculateWinner(board);
     const [moves, setMoves] = useState([]);
@@ -31,7 +30,7 @@ function App() {
 
     function onClickButton(player, index, countNum) {
 
-        
+        //console.log("Did they win on the click?",winner);
         //console.log("Passed num", countNum);
         console.log("Player turn: ", player);
 
@@ -41,42 +40,26 @@ function App() {
             setMoves((prevMove) => [player]);
             
             setCount((prevCount) => (prevCount + 1));
-            console.log("counter", counter);
+            //console.log("counter", counter);
 
             var letter = "";
-
+            
             if (counter % 2 == 0) {
                 letter = "X";
                 board[index] = letter;
                 Player1.push(index);
                 //console.log(Player1);
                 calculateWinner(Player1, player);
-                console.log("Winner Player1: ", calculateWinner(Player1), winner);
-                //console.log("Winner Player2: ", calculateWinner(Player2));
-                if (winner == "winner") {
-                    console.log(player, " is the Winner!");
-                    socket.emit("Winner", { Winner: player });
-                }
-                else if (winner == "draw") {
-                    console.log("It's a draw...");
-                }
-
-
             }
 
             else {
                 letter = "O";
                 board[index] = letter;
                 Player2.push(index);
+                calculateWinner(Player2,player);
                 //console.log(Player2);
-                if (winner == "winner") {
-                    console.log(player, " is the Winner!");
-                    socket.emit("Winner", { Winner: player });
-                }
-                else if (winner == "draw") {
-                    console.log("Its a draw...");
-                }
             }
+            
 
             //setBoard(board => [...board]);
             setBoard(prevBoard => {
@@ -84,6 +67,12 @@ function App() {
                 newBoard[index] = letter;
                 return newBoard;
             });
+            
+            if (clickedBoxes(board) == true) {          //emits that there was a draw
+                console.log("Its a draw...");
+                socket.emit("Winner", {Draw: 'draw'});
+             }
+            
 
             //console.log(board[item]);
             console.log(index);
@@ -104,7 +93,7 @@ function App() {
 
     function spectators(connected) {
         var i;
-        var spectators = []
+        var spectators = [];
         for (i = 2; i < connected.length; i++) {
             spectators.push(connected[i]);
         }
@@ -144,10 +133,6 @@ function App() {
     }
 
 
-    function finishGame() {
-        setGameEnd(true);
-    }
-
 
     function calculateWinner(player, name) {
         const possible = [
@@ -163,17 +148,31 @@ function App() {
         for (let i = 0; i < possible.length; i++) {
             const [a, b, c] = possible[i];
             if (player[a] && player[a] === player[b] && player[a] === player[c]) {
-                console.log(<board User name={turn}/>, name, " won the game!");
-                socket.emit("Winner", { Name: name });
                 return "winner";
             }
-            else if (!player.includes(null)) {
-                return "draw";
-            }
         }
-        return null;
     }
 
+    function clickedBoxes(board) {
+    // Declare variable to store number of clicked boxes.
+    var count = 0;
+
+    // Iterate over all boxes
+    board.forEach(function (item) {
+        // Check if box is clicked (not null)
+        if (item !== null) {
+            // If yes, increase the value of count by 1
+            count++;
+        }
+    });
+
+    // Check if all boxes are clicked (filled)
+    if (count === 9) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
     useEffect(() => {
 
@@ -216,6 +215,7 @@ function App() {
 
 
     }, []);
+    
 
     var getSpecs = spectators(connected);
 
@@ -229,7 +229,7 @@ function App() {
 
     var login = name;
     
-    console.log(<board User name={moves[moves.length-2]}/>['props']['name']);
+    //console.log(<board User name={moves[moves.length-2]}/>['props']['name']);
 
     return (
 
@@ -257,15 +257,19 @@ function App() {
          
          <div class="user"> Player1: {connected[0]} = "X" </div>
          <div class="user"> Player2: {connected[1]} = "O" </div>
-            
-         <div class="Players">It's {turn(connected[0],connected[1])}'s turn</div>
+         <div> Spectators: {getSpecs} </div>
+         
+         {winner == "winner"
+         ? null  
+         :<div class="Players">It's {turn(connected[0],connected[1])}'s turn</div>}
     <div class="board">  
             {
             board.map(
                 (itm, idx) => 
                 <div class="box">
-    
-                    <button class="box" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}>click</button>
+                    { winner == "winner"
+                    ? null 
+                    :<button class="box" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}>click</button> }
                     
                     
               
@@ -275,21 +279,31 @@ function App() {
              )
             }
             </div>
-       </div>     ) : null}
        
       
          { winner == "winner"
        ? <div class="winner"> {<board User name={moves[moves.length-1]}/>['props']['name']} is the Winner! </div>
        : null }
 
+         {clickedBoxes(board) == true && winner != "winner"
+         ?<div class="winner"> Draw! Game Over... </div>
+         : null}
+         
+         <div class="reset">
+        { clickedBoxes(board) == true && winner != "winner" 
+       ? <button type="submit" onClick={resetButton} class="reset">Restart game?</button> 
+       : null }
+       
+       </div>
 
         <div class="reset">
         { winner == "winner" 
        ? <button type="submit" onClick={resetButton} class="reset">Restart game?</button> 
        : null }
        
-       </div>
+       </div> 
        
+       </div> ) : null}
      
 
 
