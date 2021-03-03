@@ -19,6 +19,8 @@ function App() {
     const winner = calculateWinner(board);
     const [moves, setMoves] = useState([]);
     const inputRef = useRef(null);
+    
+    const [leaderboard,setLeaderboard] = useState([]);
 
 
     // const reset = useCallback(() => {
@@ -91,12 +93,14 @@ function App() {
             console.log(index);
             socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum, Move: player, Player1_Winner: calculateWinner(Player1, player), Player2_Winner: calculateWinner(Player2, player) });
             if (currentWinner == "winner") {
-                socket.emit("Winner", { winner: <board User name={moves[moves.length-2]}/> ['props']['name'], loser: <board User name={moves[moves.length-1]}/> ['props']['name'] });
+                setLeaderboard(prevLeader => [...prevLeader, player]); //this switched up when 2 times
+                console.log(leaderboard);
+                socket.emit("Winner", { winner: player, loser: <board User name={moves[moves.length-1]}/> ['props']['name'], score:1 });  //this might not be accurate for wins, maybe try the if statement that I tired last time
             }
             
             else if (clickedBoxes(board) == true && winner != 'winner') { //emits that there was a draw
                 console.log("Its a draw...");
-                socket.emit("Draw", { Draw: 'draw' });
+                socket.emit("Draw", { Draw: 'draw' , score:0 });
             }
 
         }
@@ -330,10 +334,26 @@ function App() {
        
        </div> ) : null}
      
-
-
+     
+        {shown === true ? (
+        <table align="right">
+            <thead>
+                <tr>
+                    <th colspan="2">The table header</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>The table body</td>
+                    <td>with two columns</td>
+                </tr>
+            </tbody>
+        </table>
+        ) : null}
+  
        
     </div>
+    
 
     );
 
