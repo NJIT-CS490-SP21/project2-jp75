@@ -13,6 +13,11 @@ socketio = SocketIO(
     json=json,
     manage_session=False
 )
+win = []
+loss = []
+tie = []
+
+
 logins = []
 Player1 = ""
 Player2 = ""
@@ -88,11 +93,26 @@ def reset(data):
     
 @socketio.on('Winner')
 def winner(data):
+    global win
+    global loss
     print(str(data))
+    win.append(str(data['winner']))
+    print(win)
+    loss.append(str(data['loser']))
+    print(loss)
     
     socketio.emit('Winner', data, broadcast=True, include_self=False)
     
-
+    
+@socketio.on('Draw')
+def draw(data):
+    global tie
+    print(str(data))
+    tie.append(str(data['Draw']))
+    
+    print(tie)
+    
+    socketio.emit('Draw', data, broadcast=True, include_self=False)
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('Play')

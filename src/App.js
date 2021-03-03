@@ -15,6 +15,7 @@ function App() {
     const [Player1] = useState([]);
     const [Player2] = useState([]);
     //const [hideSpec, setSpectator] = useState(false);
+    const [winnerMoves, setWinner] = useState();
     const winner = calculateWinner(board);
     const [moves, setMoves] = useState([]);
     const inputRef = useRef(null);
@@ -35,53 +36,72 @@ function App() {
         console.log("Player turn: ", player);
 
         if (player == name) { //This seems to work for my names that have a
-        
-        console.log("board: ", board[index]);
 
-            if(board[index] == null){
+            console.log("board: ", board[index]);
 
-            setMoves((prevMove) => [player]);
+            if (board[index] == null) {
 
-            setCount((prevCount) => (prevCount + 1));
-            //console.log("counter", counter);
+                setMoves((prevMove) => [player]);
 
-            var letter = "";
-            if (counter % 2 == 0) {
-                letter = "X";
-                board[index] = letter;
-                Player1.push(index);
-                //console.log(Player1);
-                calculateWinner(Player1, player);
+                setCount((prevCount) => (prevCount + 1));
+                //console.log("counter", counter);
+
+                var letter = "";
+                if (counter % 2 == 0) {
+                    letter = "X";
+                    board[index] = letter;
+                    Player1.push(index);
+                    //console.log(Player1);
+
+                }
+
+                else {
+                    letter = "O";
+                    board[index] = letter;
+                    Player2.push(index);
+
+                }
+
+
+                //setBoard(board => [...board]);
+                setBoard(prevBoard => {
+                    const newBoard = [...prevBoard];
+                    newBoard[index] = letter;
+                    return newBoard;
+                });
+
+                //console.log("Winner", calculateWinner(Player1));
+                //console.log("Winner:", winner);
+                //var win = calculateWinner(Player1, player);
+
+                //if(win == "winner"){
+                //setWinner(prevWinner => [...prevWinner, win]);
+                //socket.emit("Winner", {Winner: win, Player: player});
+                //}
             }
 
-            else {
-                letter = "O";
-                board[index] = letter;
-                Player2.push(index);
-                calculateWinner(Player2, player);
-                //console.log(Player2);
-            }
 
+            console.log("Winner: ", calculateWinner(Player1));
+            console.log("Winner: ", calculateWinner(Player2));
 
-            //setBoard(board => [...board]);
-            setBoard(prevBoard => {
-                const newBoard = [...prevBoard];
-                newBoard[index] = letter;
-                return newBoard;
-            });
-
-            if (clickedBoxes(board) == true) { //emits that there was a draw
-                console.log("Its a draw...");
-                socket.emit("Winner", { Draw: 'draw' });
-            }
+            const currentWinner = calculateWinner(board);
 
 
             //console.log(board[item]);
             console.log(index);
-            socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum, Move: player });
+            socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum, Move: player, Player1_Winner: calculateWinner(Player1, player), Player2_Winner: calculateWinner(Player2, player) });
+            if (currentWinner == "winner") {
+                socket.emit("Winner", { winner: <board User name={moves[moves.length-2]}/> ['props']['name'], loser: <board User name={moves[moves.length-1]}/> ['props']['name'] });
             }
+            
+            else if (clickedBoxes(board) == true && winner != 'winner') { //emits that there was a draw
+                console.log("Its a draw...");
+                socket.emit("Draw", { Draw: 'draw' });
+            }
+
         }
     }
+
 
     function turn(player1, player2) {
         console.log("Counter for turn", counter);
@@ -137,7 +157,7 @@ function App() {
 
 
 
-    function calculateWinner(player, name) {
+    function calculateWinner(player) {
         const possible = [
             [0, 1, 2],
             [3, 4, 5],
@@ -153,6 +173,7 @@ function App() {
             if (player[a] && player[a] === player[b] && player[a] === player[c]) {
                 return "winner";
             }
+
         }
     }
 
