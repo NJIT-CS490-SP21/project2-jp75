@@ -158,7 +158,10 @@ function App() {
     }
     
     function showList(){
-        setShowList(true);
+        setShowList((prevList) => {
+            return !prevList;
+            
+        });
     }
 
     function resetButton() {
@@ -356,6 +359,11 @@ function App() {
      
      
         {shown === true ? (
+        <div align="right">
+        <button onClick={() => showList()}>Show Leaderboard</button>
+        
+        {shownList === true ?
+        <div>
         <table align="right">
             <thead>
                 <tr>
@@ -365,14 +373,16 @@ function App() {
             <tbody>
                 <tr>
                     <td> Names:
-                    {userList.map((user,index) => <ListItem class="List" key={index} name={user}/>)}
+                    {userList.map((user,index) => <ListItem key={index} name={user}/>)}
                     </td>
                     <td> Scores:
-                    {userScore.map((user,index) => <ListItem class="List" key={index} name={user}/>)}
+                    {userScore.map((user,index) => <ListItem key={index} name={user}/>)}
                     </td>
                 </tr>
             </tbody>
         </table>
+        </div>  : null}
+        </div>
         ) : null}
   
        
