@@ -38,8 +38,6 @@ Player1 = ""
 Player2 = ""
 Spectators = []
 players = []
-db_names = []
-db_scores = []
 users = {"PlayerX":"","PlayerO":"","Spectators":[]}
 
 @app.route('/', defaults={"filename": "index.html"})
@@ -59,8 +57,6 @@ def on_disconnect():
     
 @socketio.on('Logins')
 def on_Connection1(data):
-    global db_names
-    global db_scores
     global users
     global players
     global logins
@@ -70,6 +66,8 @@ def on_Connection1(data):
     logins.append(str(data['joined']))
     print(logins);
     
+    db_names = []
+    db_scores = []
     
     new_user = models.Joined(username=data['joined'],score=100)
     print("New user",new_user)
@@ -87,7 +85,7 @@ def on_Connection1(data):
         db_names.append(People.username) #appends username to database
         db_scores.append(People.score)
     
-    socketio.emit("User_List", {'users': db_names, 'score': db_scores})
+    socketio.emit("User_List", {'users': db_names, 'score': db_scores}) #this might be a problem everytime
     
     if(Player1 == ""):
         Player1 = logins[0]
