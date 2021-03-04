@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { Tboard, Name } from './board.js';
+import { Tboard, Name ,ListItem} from './board.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
@@ -19,6 +19,10 @@ function App() {
     const winner = calculateWinner(board);
     const [moves, setMoves] = useState([]);
     const inputRef = useRef(null);
+    
+    const [userList,setUserList] = useState([]);
+    const [userScore,setUserScore] = useState([]);
+    const [shownList,setShowList] = useState(true);
     
     const [leaderboard,setLeaderboard] = useState([]);
 
@@ -152,6 +156,10 @@ function App() {
         setShown(true);
 
     }
+    
+    function showList(){
+        setShowList(true);
+    }
 
     function resetButton() {
         setBoard(Array(9).fill(null));
@@ -215,6 +223,12 @@ function App() {
         socket.on('User_List', (data) => {
             console.log("user list data was received!");
             console.log(data);
+            
+            setUserList(data.users);
+            setUserScore(data.score);
+            
+            //console.log("List of users",userList);                //This works
+            //console.log("List of user Scores",userScore);
             
         });
 
@@ -345,13 +359,17 @@ function App() {
         <table align="right">
             <thead>
                 <tr>
-                    <th colspan="2">The table header</th>
+                    <th colspan="2">Leaderboard:</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>The table body</td>
-                    <td>with two columns</td>
+                    <td> Names:
+                    {userList.map((user,index) => <ListItem class="List" key={index} name={user}/>)}
+                    </td>
+                    <td> Scores:
+                    {userScore.map((user,index) => <ListItem class="List" key={index} name={user}/>)}
+                    </td>
                 </tr>
             </tbody>
         </table>

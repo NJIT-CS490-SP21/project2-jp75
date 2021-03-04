@@ -9,7 +9,7 @@ export function Tboard(props){
 }
 export function User(props){
     return(
-        <div> {props.name} </div>
+        <div> {props.name}</div>
     );
     
 }
@@ -19,6 +19,14 @@ export function LoginButton(props) {
     <button onClick={props.onClick}>
       Login
     </button>
+  );
+}
+
+export function ListItem(props) {
+  return(
+  <div>
+    {props.name}
+  </div>
   );
 }
 
