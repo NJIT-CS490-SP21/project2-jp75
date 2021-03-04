@@ -83,11 +83,10 @@ function App() {
             }
 
 
+            const currentWinner = calculateWinner(board);
+            
             console.log("Winner: ", calculateWinner(Player1));
             console.log("Winner: ", calculateWinner(Player2));
-
-            const currentWinner = calculateWinner(board);
-
 
             //console.log(board[item]);
             console.log(index);
@@ -210,6 +209,13 @@ function App() {
             console.log(data);
             setConnect(prevConn => [...prevConn, data.joined]);
 
+        });
+        
+        
+        socket.on('User_List', (data) => {
+            console.log("user list data was received!");
+            console.log(data);
+            
         });
 
 
