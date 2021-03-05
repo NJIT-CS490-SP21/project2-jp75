@@ -121,19 +121,25 @@ def winner(data):
     print(str(data))
     users = []
     scores = []
-    winner = models.Joined.query.filter_by(username=data['winner']).first()
-    loser = models.Joined.query.filter_by(username=data['loser']).first()
+    
+    #winner = models.Joined.query.filter_by(username=data['winner']).first()
+    #loser = models.Joined.query.filter_by(username=data['loser']).first()
+    
+    winner = db.session.query(models.Joined).filter_by(username=data['winner']).first()
+    loser= db.session.query(models.Joined).filter_by(username=data['loser']).first()
+    
+    print("This is the winner",winner)
+    print("This is the loser",loser)
     
     print("Winner username: ",winner.username," Score: ",winner.score)
     print("Loser username: ",loser.username," Score: ",loser.score)
-   # print("After:")
-    winner.score = winner.score + 1
-    db.session.merge(winner)
-    loser.score = loser.score - 1
-    db.session.merge(loser)
+ 
+    winner.score += 1
+    loser.score -= 1
     db.session.commit()
-    print("Winner username: ",winner.username," Score: ",winner.score)
-    print("Loser username: ",loser.username," Score: ",loser.score)
+
+    print("New Winner username: ",winner.username," Score: ",winner.score)
+    print("New Loser username: ",loser.username," Score: ",loser.score)
 
     
     all_people = models.Joined.query.all()
