@@ -75,6 +75,7 @@ def on_Connection1(data):
         db.session.commit()
         
     all_people = models.Joined.query.all()
+    all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
     for People in all_people:
         db_names.append(People.username) #appends username to database
         db_scores.append(People.score)
@@ -136,6 +137,7 @@ def winner(data):
 
     
     all_people = models.Joined.query.all()
+    all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
     for people in all_people:
         users.append(people.username)
         scores.append(people.score)
