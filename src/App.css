@@ -9,8 +9,6 @@ body{
 	margin: 0 auto;
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
   grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
-  
-  
 
 }
 
@@ -48,7 +46,11 @@ body{
 
 .reset{
 	text-align:center;
-  margin: auto;
+  margin:auto;
+  display:block;
+	background:grey;
+	color:cyan;
+	font-weight:bold;
 }
 
 .user{
@@ -64,4 +66,21 @@ body{
 
 .center{
 	text-align:center;
+}
+
+
+.leaderboard{
+	display : block;
+	background:grey;
+	color:cyan;
+	border: 1px solid cyan;
+	font-weight: bold;
+	width:200px;
+  height:40px;
+}
+.table{
+	border:solid black;
+	background:grey;
+	color:cyan;
+	display: table;
 }

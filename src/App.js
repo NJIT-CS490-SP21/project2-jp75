@@ -353,7 +353,7 @@ function App() {
      
         {shown === true ? (
         <div align="right">
-        <button onClick={() => showList()}>Show Leaderboard</button>
+        <button class="leaderboard" onClick={() => showList()}>Show Leaderboard</button>
         
         {shownList === true ?
         <div>
@@ -363,12 +363,12 @@ function App() {
                     <th colspan="2">Leaderboard:</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table">
                 <tr>
-                    <td> Names:
+                    <td>
                     {userList.map((user,index) => <User key={index} name={user}/>)}
                     </td>
-                    <td> Scores:
+                    <td>
                     {userScore.map((user,index) => <User key={index} name={user}/>)}
                     </td>
                 </tr>
