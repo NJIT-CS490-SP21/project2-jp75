@@ -8,6 +8,8 @@
 2. `npm install`
 3. `Flask-Cors==3.0.10`
 4. `Flask-SocketIO==5.0.1`
+5. `Flask-SQLAlchemy==2.1`
+5. `pip install -r requirements.txt`
 
 # Flask and create-react-app
 

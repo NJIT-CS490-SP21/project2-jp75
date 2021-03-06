@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { Tboard, Name ,ListItem} from './board.js';
+import { Tboard, User} from './board.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 
@@ -14,17 +14,12 @@ function App() {
     const [shown, setShown] = useState(false);
     const [Player1] = useState([]);
     const [Player2] = useState([]);
-    //const [hideSpec, setSpectator] = useState(false);
-    const [winnerMoves, setWinner] = useState();
     const winner = calculateWinner(board);
     const [moves, setMoves] = useState([]);
     const inputRef = useRef(null);
-    
     const [userList,setUserList] = useState([]);
     const [userScore,setUserScore] = useState([]);
     const [shownList,setShowList] = useState(true);
-    
-    const [leaderboard,setLeaderboard] = useState([]);
 
 
     // const reset = useCallback(() => {
@@ -96,8 +91,6 @@ function App() {
             console.log(index);
             socket.emit('Play', { index: index, Player: turn, letter: board, count: counter, num: countNum, Move: player, Player1_Winner: calculateWinner(Player1, player), Player2_Winner: calculateWinner(Player2, player) });
             if (currentWinner == "winner") {
-                setLeaderboard(prevLeader => [...prevLeader, player]); //this switched up when 2 times
-                console.log(leaderboard);
                 socket.emit("Winner", { winner: player, loser: <board User name={moves[moves.length-1]}/> ['props']['name'], score:1 });  //this might not be accurate for wins, maybe try the if statement that I tired last time
             }
             
@@ -323,7 +316,7 @@ function App() {
                 <div class="box">
                     { winner == "winner"
                     ? null 
-                    :<button class="box" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}>click</button> }
+                    :<button class="square" onClick={() => onClickButton(turn(connected[0],connected[1]),idx,1)}></button> }
               
                     <Tboard letter={itm}/>
                     
@@ -364,7 +357,7 @@ function App() {
         
         {shownList === true ?
         <div>
-        <table align="right">
+        <table class="name" align="right">
             <thead>
                 <tr>
                     <th colspan="2">Leaderboard:</th>
@@ -373,10 +366,10 @@ function App() {
             <tbody>
                 <tr>
                     <td> Names:
-                    {userList.map((user,index) => <ListItem key={index} name={user}/>)}
+                    {userList.map((user,index) => <User key={index} name={user}/>)}
                     </td>
                     <td> Scores:
-                    {userScore.map((user,index) => <ListItem key={index} name={user}/>)}
+                    {userScore.map((user,index) => <User key={index} name={user}/>)}
                     </td>
                 </tr>
             </tbody>

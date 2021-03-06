@@ -24,6 +24,13 @@ body{
   right:100%;
   top: 50%;
 }
+.square{
+	display : block;
+	border: 1px solid cyan;
+  width:100px;
+  height:100px;
+  background: grey;
+}
 
 .login{
 	font-size:25px;

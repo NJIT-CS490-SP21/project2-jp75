@@ -21,14 +21,3 @@ export function LoginButton(props) {
     </button>
   );
 }
-
-export function ListItem(props) {
-  return(
-  <div>
-    {props.name}
-  </div>
-  );
-}
-
-
-//<button type="submit" onClick={ () => loginButton(0)} class="buttn">Login</button>
