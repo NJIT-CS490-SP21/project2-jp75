@@ -1,7 +1,6 @@
 ##Clone repository
-1.` git clone --branch milestone1 https://github.com/NJIT-CS490-SP21/project2-jp75 ``
+1.` git clone --branch milestone_2 https://github.com/NJIT-CS490-SP21/project2-jp75 ``
 
-# Flask and create-react-app
 
 ## Requirements
 1. `pip install Flask`
@@ -9,26 +8,32 @@
 3. `Flask-Cors==3.0.10`
 4. `Flask-SocketIO==5.0.1`
 5. `Flask-SQLAlchemy==2.1`
-5. `pip install -r requirements.txt`
+6. `psycopg2`
+7. `pip install -r requirements.txt` -this could be done to match all files that I have to ensure it will run
 
 # Flask and create-react-app
 
-## Requirements
-1. `npm install`
-2. `pip install -r requirements.txt`
-
 ## Setup
 1. Run `echo "DANGEROUSLY_DISABLE_HOST_CHECK=true" > .env.development.local` in the project directory
+
+## Setup for heroku database and app
+1. type heroku login -i to login to heroku
+2. type heroku create (Create a new heroku app)
+3. heroku addons:create heroku-postgresql:hobby-dev (add a DB)
+4. heroku config (check your env vars)
+5. Create a .env and put the info inside with the below string
+6. DATABASE_URL='set the URL what we got from heroku config'
 
 ## Run Application
 1. Run command in terminal (in your project directory): `python app.py`
 2. Run command in another terminal, `cd` into the project directory, and run `npm run start`
 3. Preview web page in browser '/'
 
-## Deploy to Heroku (not necessary)
-1. Create a Heroku app: `heroku create --buildpack heroku/python`
-2. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs`
-3. Push to Heroku: `git push heroku main`
+## Deploy to Heroku ap (not necessary)
+1. make sure heroku still has th other app
+2. Add python buildpack `heroku buildpacks:add --index 1 heroku/python` or add it on herokus website
+3. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs` or add it on herokus website
+4. Push to Heroku: `git push heroku {your_branch_name}:main` or `git push heroku main` if you want to put it in your main branch
 
 ## Two known problems
 1. I seem to have an issue on my server side with people who join the game. Sometimes I'll Join in and a second player will join, but for some reason it will say that the second player is the first player and the first player has no one in the room. Im not sure if there really is a fix to this as I think it's on the server side, but for the next milestone I think making a player disconnect out of the connected array could fix this. I will neeed to find which player disconnected via a logout button and then it will take them out of the array.
