@@ -1,70 +1,71 @@
+"""
+Importing features to allow usage of OS, Flask,SocketIO,SQLAlchemy,Dotenv files for server.
+"""
 import os
 from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
+import models
 
 load_dotenv(find_dotenv())
 
-app = Flask(__name__, static_folder='./build/static')
+BUILD_APP = Flask(__name__, static_folder='./build/static')
 
 # Point SQLAlchemy to your Heroku database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+BUILD_APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 # Gets rid of a warning
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+BUILD_APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+DB = SQLAlchemy(BUILD_APP)
+DB.create_all()
 
-import models
-db.create_all()
+CORS = CORS(BUILD_APP, resources={r"/*": {"origins": "*"}})
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
-
-socketio = SocketIO(app,
+SOCKETIO = SocketIO(BUILD_APP,
                     cors_allowed_origins="*",
                     json=json,
                     manage_session=False)
 
-win = []
-loss = []
-tie = []
-logins = []
-Player1 = ""
-Player2 = ""
-Spectators = []
-players = []
-users = {"PlayerX": "", "PlayerO": "", "Spectators": []}
+WIN = []
+LOSS = []
+TIE = []
+LOGINS = []
+PLAYER1 = ""
+PLAYER2 = ""
+SPECTATORS = []
+PLAYERS = []
+USERS = {"PlayerX": "", "PlayerO": "", "Spectators": []}
 
 
-@app.route('/', defaults={"filename": "index.html"})
-@app.route('/<path:filename>')
+@BUILD_APP.route('/', defaults={"filename": "index.html"})
+@BUILD_APP.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
 
 
 # When a client connects from this Socket connection, this function is run
-@socketio.on('connect')
+@SOCKETIO.on('connect')
 def on_connect():
     print('User connected!')
 
-
 # When a client disconnects from this Socket connection, this function is run
-@socketio.on('disconnect')
+@SOCKETIO.on('disconnect')
 def on_disconnect():
     print('User disconnected!')
 
 
-@socketio.on('Logins')
-def on_Connection1(data):
-    global users
-    global players
-    global logins
-    global Player1
-    global Player2
+@SOCKETIO.on('Logins')
+def on_connection1(data):
+    global USERS
+    global PLAYERS
+    global LOGINS
+    global PLAYER1
+    global PLAYER2
     print(str(data))
-    logins.append(str(data['joined']))
-    print(logins)
+    LOGINS.append(str(data['joined']))
+    print(LOGINS)
     db_names = []
     db_scores = []
     new_user = models.Joined(username=data['joined'], score=100)
@@ -74,58 +75,58 @@ def on_Connection1(data):
         models.Joined.query.filter_by(username=data['joined']).first())
     #print(exists)
     if exists != True:  #gets if user is already in db
-        db.session.add(new_user)
-        db.session.commit()
+        DB.session.add(new_user)
+        DB.session.commit()
 
     all_people = models.Joined.query.all()
     all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
     for People in all_people:
         db_names.append(People.username)  #appends username to database
         db_scores.append(People.score)
-    socketio.emit("User_List", {
+    SOCKETIO.emit("User_List", {
         'users': db_names,
         'score': db_scores
     })  #this might be a problem everytime
 
-    if (Player1 == ""):
-        Player1 = logins[0]
-        players.append(Player1)
-    elif (Player2 == ""):
-        Player2 = logins[1]
-        players.append(Player2)
+    if PLAYER1 == "":
+        PLAYER1 = LOGINS[0]
+        PLAYERS.append(PLAYER1)
+    elif PLAYER2 == "":
+        PLAYER2 = LOGINS[1]
+        PLAYERS.append(PLAYER2)
 
-    for i in logins:
-        if i not in players:
-            Spectators.append(i)
+    for i in LOGINS:
+        if i not in PLAYERS:
+            SPECTATORS.append(i)
 
-    print("Players: ", players)
-    print("Spectators: ", Spectators)
+    print("Players: ", PLAYERS)
+    print("Spectators: ", SPECTATORS)
 
-    if (users["PlayerX"] == ""):
-        users["PlayerX"] = players[0]
-    elif (users["PlayerO"] == ""):
-        users["PlayerO"] = players[1]
+    if USERS["PlayerX"] == "":
+        USERS["PlayerX"] = PLAYERS[0]
+    elif USERS["PlayerO"] == "":
+        USERS["PlayerO"] = PLAYERS[1]
     else:
-        users["Spectators"] = Spectators
-    print(users)
+        USERS["Spectators"] = SPECTATORS
+    print(USERS)
 
-    socketio.emit("Logins", data, broadcast=True, include_self=True)
+    SOCKETIO.emit("Logins", data, broadcast=True, include_self=True)
 
-    print(Player1, "is X")
-    print(Player2, "is O")
-    print(Spectators, " are spectating the game")
+    print(PLAYER1, "is X")
+    print(PLAYER2, "is O")
+    print(SPECTATORS, " are spectating the game")
 
 
-@socketio.on('Reset')
+@SOCKETIO.on('Reset')
 def reset(data):
     print(str(data))
-    socketio.emit('Reset', data, broadcast=True, include_self=True)
+    SOCKETIO.emit('Reset', data, broadcast=True, include_self=True)
 
 
-@socketio.on('Winner')
+@SOCKETIO.on('Winner')
 def winner(data):
-    global win
-    global loss
+    global WIN
+    global LOSS
     print(str(data))
     users = []
     scores = []
@@ -133,9 +134,9 @@ def winner(data):
     #winner = models.Joined.query.filter_by(username=data['winner']).first()
     #loser = models.Joined.query.filter_by(username=data['loser']).first()
 
-    winner = db.session.query(
+    winner = DB.session.query(
         models.Joined).filter_by(username=data['winner']).first()
-    loser = db.session.query(
+    loser = DB.session.query(
         models.Joined).filter_by(username=data['loser']).first()
 
     print("This is the winner", winner)
@@ -146,7 +147,7 @@ def winner(data):
 
     winner.score += 1
     loser.score -= 1
-    db.session.commit()
+    DB.session.commit()
 
     print("New Winner username: ", winner.username, " Score: ", winner.score)
     print("New Loser username: ", loser.username, " Score: ", loser.score)
@@ -156,44 +157,44 @@ def winner(data):
     for people in all_people:
         users.append(people.username)
         scores.append(people.score)
-    socketio.emit("User_List", {'users': users, 'score': scores})
+    SOCKETIO.emit("User_List", {'users': users, 'score': scores})
 
     print(users)
     print(scores)
 
-    win.append(str(data['winner']))
-    print(win)
-    loss.append(str(data['loser']))
-    print(loss)
+    WIN.append(str(data['winner']))
+    print(WIN)
+    LOSS.append(str(data['loser']))
+    print(LOSS)
 
-    socketio.emit('Winner', data, broadcast=True, include_self=False)
+    SOCKETIO.emit('Winner', data, broadcast=True, include_self=False)
 
 
-@socketio.on('Draw')
+@SOCKETIO.on('Draw')
 def draw(data):
-    global tie
+    global TIE
     print(str(data))
-    tie.append(str(data['Draw']))
-    #print(tie)
-    socketio.emit('Draw', data, broadcast=True, include_self=False)
+    TIE.append(str(data['Draw']))
+    #print(TIE)
+    SOCKETIO.emit('Draw', data, broadcast=True, include_self=False)
 
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
-@socketio.on('Play')
+@SOCKETIO.on('Play')
 def on_click(
         data):  # data is whatever arg you pass in your emit call on client
     print(str(data))
 
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('Play', data, broadcast=True, include_self=False)
+    SOCKETIO.emit('Play', data, broadcast=True, include_self=False)
 
 
 if __name__ == '__main__':
     # Note that we don't call app.run anymore. We call socketio.run with app arg
-    socketio.run(
-        app,
+    SOCKETIO.run(
+        BUILD_APP,
         host=os.getenv('IP', '0.0.0.0'),
         port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
         debug=True)
