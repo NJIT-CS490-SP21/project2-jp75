@@ -8,7 +8,6 @@ class Person(DB.Model):
     def __repr__(self):
         return '<Person %r>' % self.username
 
-
 class Joined(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     username = DB.Column(DB.String(80), unique=True, nullable=False)

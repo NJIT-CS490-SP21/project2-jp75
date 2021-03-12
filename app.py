@@ -7,7 +7,6 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
-import models
 
 load_dotenv(find_dotenv())
 
@@ -20,7 +19,7 @@ APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 DB = SQLAlchemy(APP)
 DB.create_all()
-
+import models
 CORS = CORS(APP, resources={r"/*": {"origins": "*"}})
 
 SOCKETIO = SocketIO(APP,
@@ -73,7 +72,7 @@ def on_connection1(data):
         models.Joined.query.filter_by(username=data['joined']).first())
     #print(exists)
     flag = True  #pylint explained that this was the best practice
-    if exists != flag:  #gets if user is already in db
+    if exists != flag:  #gets if user is already in DB
         DB.session.add(new_user)
         DB.session.commit()
 
@@ -194,7 +193,7 @@ def on_click(
 
 
 if __name__ == '__main__':
-    # Note that we don't call APP.run anymore. We call socketio.run with APP args
+    # Note that we don't call APP.run anymore. We call socketio.run with APP arg
     SOCKETIO.run(
         APP,
         host=os.getenv('IP', '0.0.0.0'),
