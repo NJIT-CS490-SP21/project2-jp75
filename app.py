@@ -194,7 +194,7 @@ def on_click(
 
 
 if __name__ == '__main__':
-    # Note that we don't call APP.run anymore. We call socketio.run with APP arg
+    # Note that we don't call APP.run anymore. We call socketio.run with APP args
     SOCKETIO.run(
         APP,
         host=os.getenv('IP', '0.0.0.0'),
