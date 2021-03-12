@@ -1,8 +1,8 @@
 // import logo from './logo.svg';
-import './App.css';
-import React, { useState, useRef, useEffect } from 'react';
-import io from 'socket.io-client';
-import { Tboard, User } from './board';
+import "./App.css";
+import React, { useState, useRef, useEffect } from "react";
+import io from "socket.io-client";
+import { Tboard, User } from "./board";
 
 const socket = io();
 
@@ -39,7 +39,7 @@ function App() {
     for (let i = 0; i < possible.length; i += 1) {
       const [a, b, c] = possible[i];
       if (player[a] && player[a] === player[b] && player[a] === player[c]) {
-        return 'winner';
+        return "winner";
       }
     }
     return null;
@@ -48,7 +48,7 @@ function App() {
   const winner = calculateWinner(board);
 
   function turn(player1, player2) {
-    console.log('Counter for turn', counter);
+    console.log("Counter for turn", counter);
     if (counter % 2 === 0) {
       return player1;
     }
@@ -75,21 +75,21 @@ function App() {
 
   function resetButton() {
     setBoard(Array(9).fill(null));
-    socket.emit('Reset', { Reset: board });
+    socket.emit("Reset", { Reset: board });
   }
 
   function loginButton() {
     const username = inputRef.current.value;
 
-    if (username !== '') {
-      console.log('Current logins:', connected);
-      console.log('Length', connected.length);
+    if (username !== "") {
+      console.log("Current logins:", connected);
+      console.log("Length", connected.length);
 
-      socket.emit('Logins', { joined: username });
+      socket.emit("Logins", { joined: username });
       showBoard(); // shows the board if you click on login
       setUser(username);
     } else {
-      console.log('We got a false result');
+      console.log("We got a false result");
     }
   }
 
@@ -115,12 +115,12 @@ function App() {
   function onClickButton(player, index, countNum) {
     // console.log("Did they win on the click?",winner);
     // console.log("Passed num", countNum);
-    console.log('Player turn: ', player);
+    console.log("Player turn: ", player);
 
     if (player === name) {
       // This seems to work for my names that have a
 
-      console.log('board: ', board[index]);
+      console.log("board: ", board[index]);
 
       if (board[index] === null) {
         setMoves((prevMove) => [...prevMove, player]);
@@ -129,14 +129,14 @@ function App() {
         setCount((prevCount) => prevCount + 1);
         // console.log("counter", counter);
 
-        let letter = '';
+        let letter = "";
         if (counter % 2 === 0) {
-          letter = 'X';
+          letter = "X";
           board[index] = letter;
           Player1.push(index);
           // console.log(Player1);
         } else {
-          letter = 'O';
+          letter = "O";
           board[index] = letter;
           Player2.push(index);
         }
@@ -159,12 +159,12 @@ function App() {
       }
       const currentWinner = calculateWinner(board);
 
-      console.log('Winner: ', calculateWinner(Player1));
-      console.log('Winner: ', calculateWinner(Player2));
+      console.log("Winner: ", calculateWinner(Player1));
+      console.log("Winner: ", calculateWinner(Player2));
 
       // console.log(board[item]);
       console.log(index);
-      socket.emit('Play', {
+      socket.emit("Play", {
         index,
         Player: turn,
         letter: board,
@@ -174,29 +174,29 @@ function App() {
         Player1_Winner: calculateWinner(Player1, player),
         Player2_Winner: calculateWinner(Player2, player),
       });
-      if (currentWinner === 'winner') {
-        socket.emit('Winner', {
+      if (currentWinner === "winner") {
+        socket.emit("Winner", {
           winner: player,
           loser: (<board User name={moves[moves.length - 1]} />).props.name,
           score: 1,
         });
-      } else if (clickedBoxes(board) === true && winner !== 'winner') {
+      } else if (clickedBoxes(board) === true && winner !== "winner") {
         // emits that there was a draw
-        console.log('Its a draw...');
-        socket.emit('Draw', { Draw: 'draw', score: 0 });
+        console.log("Its a draw...");
+        socket.emit("Draw", { Draw: "draw", score: 0 });
       }
     }
   }
 
   useEffect(() => {
-    socket.on('Logins', (data) => {
-      console.log('New Login');
+    socket.on("Logins", (data) => {
+      console.log("New Login");
       console.log(data);
       setConnect((prevConn) => [...prevConn, data.joined]);
     });
 
-    socket.on('User_List', (data) => {
-      console.log('user list data was received!');
+    socket.on("User_List", (data) => {
+      console.log("user list data was received!");
       console.log(data);
 
       setUserList(data.users);
@@ -206,21 +206,21 @@ function App() {
       // console.log("List of user Scores",userScore);
     });
 
-    socket.on('Play', (data) => {
-      console.log('Letter was received!');
+    socket.on("Play", (data) => {
+      console.log("Letter was received!");
       console.log(data);
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
       setMoves((prevMove) => [...prevMove, data.Move]);
       setCount(data.count + data.num);
-      console.log('current count is', data.count);
+      console.log("current count is", data.count);
 
       // board[data.index] = data.letter;
-      return setBoard(() => ([...data.letter]));
+      return setBoard(() => [...data.letter]);
     });
 
-    socket.on('Reset', (data) => {
-      console.log('Reseting game');
+    socket.on("Reset", (data) => {
+      console.log("Reseting game");
       console.log(data);
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
@@ -232,11 +232,11 @@ function App() {
 
   const getSpecs = spectators(connected);
 
-  console.log(getSpecs, ' is a spectator');
+  console.log(getSpecs, " is a spectator");
 
-  console.log('Current connected users', connected);
+  console.log("Current connected users", connected);
 
-  console.log('Username: ', name);
+  console.log("Username: ", name);
 
   const login = name;
 
@@ -247,7 +247,12 @@ function App() {
       {shown === false ? (
         <div className="login">
           <div>Player Login: </div>
-          <input name="name" ref={inputRef} type="text" placeholder="username" />
+          <input
+            name="name"
+            ref={inputRef}
+            type="text"
+            placeholder="username"
+          />
           <button type="submit" onClick={loginButton} className="buttn">
             Login
           </button>
@@ -257,53 +262,45 @@ function App() {
       {shown === true ? (
         <div>
           <div className="login" id={login}>
-            {' '}
-            username:
-            {' '}
-            {login}
+            {" "}
+            username: {login}
           </div>
 
           <div className="user">
-            {' '}
+            {" "}
             Player1:
-            {connected[0]}
-            {' '}
-            = &quot;X&quot;
-            {' '}
+            {connected[0]} = &quot;X&quot;{" "}
           </div>
           <div className="user">
-            {' '}
+            {" "}
             Player2:
-            {connected[1]}
-            {' '}
-            = &quot;O&quot;
-            {' '}
+            {connected[1]} = &quot;O&quot;{" "}
           </div>
           <div>
-            {' '}
+            {" "}
             Spectators:
             {getSpecs}
           </div>
 
           <br />
 
-          {winner === 'winner' ? null : (
+          {winner === "winner" ? null : (
             <div className="Players">
-              It&rsquo;s
-              {' '}
-              {turn(connected[0], connected[1])}
+              It&rsquo;s {turn(connected[0], connected[1])}
               &rsquo;s turn
             </div>
           )}
           <div className="board">
             {board.map((itm, idx) => (
               <div className="box">
-                {winner === 'winner' ? null : (
+                {winner === "winner" ? null : (
                   <button
                     type="button"
                     aria-label="board"
                     className="square"
-                    onClick={() => onClickButton(turn(connected[0], connected[1]), idx, 1)}
+                    onClick={() =>
+                      onClickButton(turn(connected[0], connected[1]), idx, 1)
+                    }
                   />
                 )}
 
@@ -312,24 +309,20 @@ function App() {
             ))}
           </div>
 
-          {winner === 'winner' ? (
+          {winner === "winner" ? (
             <div className="winner">
-              {' '}
-              {
-                (<board User name={moves[moves.length - 1]} />).props.name
-              }
-              {' '}
-              is the Winner!
-              {' '}
+              {" "}
+              {(<board User name={moves[moves.length - 1]} />).props.name} is
+              the Winner!{" "}
             </div>
           ) : null}
 
-          {clickedBoxes(board) === true && winner !== 'winner' ? (
+          {clickedBoxes(board) === true && winner !== "winner" ? (
             <div className="winner"> Draw! Game Over... </div>
           ) : null}
 
           <div className="reset">
-            {clickedBoxes(board) === true && winner !== 'winner' ? (
+            {clickedBoxes(board) === true && winner !== "winner" ? (
               <button type="submit" onClick={resetButton} className="reset">
                 Restart game?
               </button>
@@ -337,7 +330,7 @@ function App() {
           </div>
 
           <div className="reset">
-            {winner === 'winner' ? (
+            {winner === "winner" ? (
               <button type="submit" onClick={resetButton} className="reset">
                 Restart game?
               </button>
@@ -348,7 +341,11 @@ function App() {
 
       {shown === true ? (
         <div align="right">
-          <button type="button" className="leaderboard" onClick={() => showList()}>
+          <button
+            type="button"
+            className="leaderboard"
+            onClick={() => showList()}
+          >
             Show Leaderboard
           </button>
 

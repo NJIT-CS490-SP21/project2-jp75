@@ -2,7 +2,7 @@
 Importing features to allow usage of OS, Flask,SocketIO,SQLAlchemy,Dotenv files for server.
 """
 import os
-from flask import Flask, send_from_directory, json#, session
+from flask import Flask, send_from_directory, json  #, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -35,6 +35,7 @@ def index(filename):
     """Index contains filename"""
     return send_from_directory('./build', filename)
 
+
 @SOCKETIO.on('connect')
 def on_connect():
     """function for user connected to server"""
@@ -62,7 +63,7 @@ def on_connection1(data):
     exists = bool(
         models.Joined.query.filter_by(username=data['joined']).first())
     #print(exists)
-    flag = True         #pylint explained that this was the best practice
+    flag = True  #pylint explained that this was the best practice
     if exists != flag:  #gets if user is already in db
         DB.session.add(new_user)
         DB.session.commit()
@@ -173,7 +174,8 @@ def draw(data):
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @SOCKETIO.on('Play')
-def on_click(data):  # data is whatever arg you pass in your emit call on client
+def on_click(
+        data):  # data is whatever arg you pass in your emit call on client
     """ Method determines what button was clicked and sends the information back tot he client """
     print(str(data))
 
