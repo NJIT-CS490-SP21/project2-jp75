@@ -2,7 +2,7 @@
 Importing features to allow usage of OS, Flask,SocketIO,SQLAlchemy,Dotenv files for server.
 """
 import os
-from flask import Flask, send_from_directory, json, session
+from flask import Flask, send_from_directory, json#, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -11,58 +11,46 @@ import models
 
 load_dotenv(find_dotenv())
 
-BUILD_APP = Flask(__name__, static_folder='./build/static')
+APP = Flask(__name__, static_folder='./build/static')
 
 # Point SQLAlchemy to your Heroku database
-BUILD_APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 # Gets rid of a warning
-BUILD_APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-DB = SQLAlchemy(BUILD_APP)
+DB = SQLAlchemy(APP)
 DB.create_all()
 
-CORS = CORS(BUILD_APP, resources={r"/*": {"origins": "*"}})
+CORS = CORS(APP, resources={r"/*": {"origins": "*"}})
 
-SOCKETIO = SocketIO(BUILD_APP,
+SOCKETIO = SocketIO(APP,
                     cors_allowed_origins="*",
                     json=json,
                     manage_session=False)
 
-WIN = []
-LOSS = []
-TIE = []
-LOGINS = []
-PLAYER1 = ""
-PLAYER2 = ""
-SPECTATORS = []
-PLAYERS = []
-USERS = {"PlayerX": "", "PlayerO": "", "Spectators": []}
 
-
-@BUILD_APP.route('/', defaults={"filename": "index.html"})
-@BUILD_APP.route('/<path:filename>')
+@APP.route('/', defaults={"filename": "index.html"})
+@APP.route('/<path:filename>')
 def index(filename):
+    """Index contains filename"""
     return send_from_directory('./build', filename)
 
-
-# When a client connects from this Socket connection, this function is run
 @SOCKETIO.on('connect')
 def on_connect():
+    """function for user connected to server"""
     print('User connected!')
 
-# When a client disconnects from this Socket connection, this function is run
+
 @SOCKETIO.on('disconnect')
 def on_disconnect():
+    """function for user disconnected from server"""
     print('User disconnected!')
 
 
 @SOCKETIO.on('Logins')
 def on_connection1(data):
-    global USERS
-    global PLAYERS
-    global LOGINS
-    global PLAYER1
-    global PLAYER2
+    """function for user login Onclick button"""
+    global USERS, PLAYERS, LOGINS, PLAYER1, PLAYER2
     print(str(data))
     LOGINS.append(str(data['joined']))
     print(LOGINS)
@@ -74,15 +62,16 @@ def on_connection1(data):
     exists = bool(
         models.Joined.query.filter_by(username=data['joined']).first())
     #print(exists)
-    if exists != True:  #gets if user is already in db
+    flag = True         #pylint explained that this was the best practice
+    if exists != flag:  #gets if user is already in db
         DB.session.add(new_user)
         DB.session.commit()
 
     all_people = models.Joined.query.all()
     all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
-    for People in all_people:
-        db_names.append(People.username)  #appends username to database
-        db_scores.append(People.score)
+    for people in all_people:
+        db_names.append(people.username)  #appends username to database
+        db_scores.append(people.score)
     SOCKETIO.emit("User_List", {
         'users': db_names,
         'score': db_scores
@@ -119,14 +108,15 @@ def on_connection1(data):
 
 @SOCKETIO.on('Reset')
 def reset(data):
+    """ Sends info that reset button was clicked back to client """
     print(str(data))
     SOCKETIO.emit('Reset', data, broadcast=True, include_self=True)
 
 
 @SOCKETIO.on('Winner')
 def winner(data):
-    global WIN
-    global LOSS
+    """ Determines if ther player is a winner and maps it to the database """
+    global WIN, LOSS
     print(str(data))
     users = []
     scores = []
@@ -134,22 +124,22 @@ def winner(data):
     #winner = models.Joined.query.filter_by(username=data['winner']).first()
     #loser = models.Joined.query.filter_by(username=data['loser']).first()
 
-    winner = DB.session.query(
+    win = DB.session.query(
         models.Joined).filter_by(username=data['winner']).first()
     loser = DB.session.query(
         models.Joined).filter_by(username=data['loser']).first()
 
-    print("This is the winner", winner)
+    print("This is the winner", win)
     print("This is the loser", loser)
 
-    print("Winner username: ", winner.username, " Score: ", winner.score)
+    print("Winner username: ", win.username, " Score: ", win.score)
     print("Loser username: ", loser.username, " Score: ", loser.score)
 
-    winner.score += 1
+    win.score += 1
     loser.score -= 1
     DB.session.commit()
 
-    print("New Winner username: ", winner.username, " Score: ", winner.score)
+    print("New Winner username: ", win.username, " Score: ", win.score)
     print("New Loser username: ", loser.username, " Score: ", loser.score)
 
     all_people = models.Joined.query.all()
@@ -172,6 +162,7 @@ def winner(data):
 
 @SOCKETIO.on('Draw')
 def draw(data):
+    """ Function tells if the game was a draw """
     global TIE
     print(str(data))
     TIE.append(str(data['Draw']))
@@ -182,8 +173,8 @@ def draw(data):
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @SOCKETIO.on('Play')
-def on_click(
-        data):  # data is whatever arg you pass in your emit call on client
+def on_click(data):  # data is whatever arg you pass in your emit call on client
+    """ Method determines what button was clicked and sends the information back tot he client """
     print(str(data))
 
     # This emits the 'chat' event from the server to all clients except for
@@ -192,9 +183,18 @@ def on_click(
 
 
 if __name__ == '__main__':
-    # Note that we don't call app.run anymore. We call socketio.run with app arg
+    # Note that we don't call APP.run anymore. We call socketio.run with APP arg
+    WIN = []
+    LOSS = []
+    TIE = []
+    LOGINS = []
+    PLAYER1 = ""
+    PLAYER2 = ""
+    SPECTATORS = []
+    PLAYERS = []
+    USERS = {"PlayerX": "", "PlayerO": "", "Spectators": []}
     SOCKETIO.run(
-        BUILD_APP,
+        APP,
         host=os.getenv('IP', '0.0.0.0'),
         port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
         debug=True)
