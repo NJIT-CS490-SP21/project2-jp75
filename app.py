@@ -28,6 +28,15 @@ SOCKETIO = SocketIO(APP,
                     json=json,
                     manage_session=False)
 
+WIN = []
+LOSS = []
+TIE = []
+LOGINS = []
+PLAYER1 = ""
+PLAYER2 = ""
+SPECTATORS = []
+PLAYERS = []
+USERS = {"PlayerX": "", "PlayerO": "", "Spectators": []}
 
 @APP.route('/', defaults={"filename": "index.html"})
 @APP.route('/<path:filename>')
@@ -186,15 +195,6 @@ def on_click(
 
 if __name__ == '__main__':
     # Note that we don't call APP.run anymore. We call socketio.run with APP arg
-    WIN = []
-    LOSS = []
-    TIE = []
-    LOGINS = []
-    PLAYER1 = ""
-    PLAYER2 = ""
-    SPECTATORS = []
-    PLAYERS = []
-    USERS = {"PlayerX": "", "PlayerO": "", "Spectators": []}
     SOCKETIO.run(
         APP,
         host=os.getenv('IP', '0.0.0.0'),
