@@ -14,6 +14,7 @@ Flask==1.1.2
 Flask-Cors==3.0.10
 Flask-SocketIO==5.0.1
 Flask-SQLAlchemy==2.1
+futures==3.1.1
 git-remote-codecommit==1.15.1
 idna==2.10
 ikp3db==1.4.1
@@ -41,6 +42,7 @@ Pygments==2.7.4
 pylint==2.4.4
 pylint-django==2.3.0
 pylint-flask==0.6
+pylint-flask-sqlalchemy==0.2.0
 pylint-plugin-utils==0.6
 python-dateutil==2.8.1
 python-dotenv==0.15.0
@@ -64,4 +66,5 @@ virtualenvwrapper==4.8.4
 wcwidth==0.2.5
 Werkzeug==1.0.1
 wrapt==1.12.1
+yapf==0.30.0
 zipp==3.4.0
