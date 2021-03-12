@@ -1,12 +1,22 @@
-import React from "react";
+import React from 'react';
 
 export function Tboard(props) {
-  return <div> {props.letter} </div>;
+  return (
+    <div>
+      {props.letter}
+    </div>
+  );
 }
 export function User(props) {
-  return <div> {props.name}</div>;
+  return (
+    <div>
+      {props.name}
+    </div>
+  );
 }
 
 export function LoginButton(props) {
-  return <button onClick={props.onClick}>Login</button>;
+  return (
+    <button onClick={props.onClick}>Login</button>
+  );
 }
