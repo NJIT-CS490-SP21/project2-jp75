@@ -63,29 +63,11 @@ def on_connection1(data):
     print(str(data))
     LOGINS.append(str(data['joined']))
     print(LOGINS)
-    db_names = []
-    db_scores = []
-    new_user = models.Joined(username=data['joined'], score=100)
-    print("New user", new_user)
-    #we need to see if the user already exists in the database
-    exists = bool(
-        models.Joined.query.filter_by(username=data['joined']).first())
-    #print(exists)
-    flag = True  #pylint explained that this was the best practice
-    if exists != flag:  #gets if user is already in DB
-        DB.session.add(new_user)
-        DB.session.commit()
-
-    all_people = models.Joined.query.all()
-    all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
-    for people in all_people:
-        db_names.append(people.username)  #appends username to database
-        db_scores.append(people.score)
+    db_names, db_scores = add_user(data['joined'])
     SOCKETIO.emit("User_List", {
         'users': db_names,
         'score': db_scores
-    })  #this might be a problem everytime
-
+    })
     if PLAYER1 == "":
         PLAYER1 = LOGINS[0]
         PLAYERS.append(PLAYER1)
@@ -113,13 +95,34 @@ def on_connection1(data):
     print(PLAYER1, "is X")
     print(PLAYER2, "is O")
     print(SPECTATORS, " are spectating the game")
+def add_user(username):
+    """ To create the user and put them in the database"""
+    db_names = []
+    db_scores = []
+    new_user = models.Joined(username=username, score=100)
+    print("New user", new_user)
+    #we need to see if the user already exists in the database
+    exists = bool(
+        models.Joined.query.filter_by(username=username).first())
+    print(exists)
+    flag = True  #pylint explained that this was the best practice
+    if exists != flag:  #gets if user is already in DB
+        DB.session.add(new_user)
+        DB.session.commit()
 
+    all_people = models.Joined.query.all()
+    all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
+    for people in all_people:
+        db_names.append(people.username)  #appends username to database
+        db_scores.append(people.score)
+    return db_names, db_scores
 
 @SOCKETIO.on('Reset')
 def reset(data):
     """ Sends info that reset button was clicked back to client """
     print(str(data))
     SOCKETIO.emit('Reset', data, broadcast=True, include_self=True)
+    return 'Reset'
 
 
 @SOCKETIO.on('Winner')
@@ -166,8 +169,8 @@ def winner(data):
     LOSS.append(str(data['loser']))
     print(LOSS)
 
-    SOCKETIO.emit('Winner', data, broadcast=True, include_self=False)
-
+    SOCKETIO.emit('Winner', data, broadcast=True, include_self=True)
+    return str(data['winner'])
 
 @SOCKETIO.on('Draw')
 def draw(data):
@@ -176,7 +179,8 @@ def draw(data):
     print(str(data))
     TIE.append(str(data['Draw']))
     #print(TIE)
-    SOCKETIO.emit('Draw', data, broadcast=True, include_self=False)
+    SOCKETIO.emit('Draw', data, broadcast=True, include_self=True)
+    return data
 
 
 # When a client emits the event 'chat' to the server, this function is run
@@ -190,6 +194,7 @@ def on_click(
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     SOCKETIO.emit('Play', data, broadcast=True, include_self=False)
+    return data
 
 
 if __name__ == '__main__':
