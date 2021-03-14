@@ -1,22 +1,18 @@
 import React from 'react';
 
 export function Tboard(props) {
+  const Props = props;
   return (
     <div>
-      {props.letter}
+      {Props.letter}
     </div>
   );
 }
 export function User(props) {
+  const Props = props;
   return (
     <div>
-      {props.name}
+      {Props.name}
     </div>
-  );
-}
-
-export function LoginButton(props) {
-  return (
-    <button onClick={props.onClick}>Login</button>
   );
 }

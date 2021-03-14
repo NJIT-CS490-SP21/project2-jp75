@@ -48,12 +48,14 @@ def index(filename):
 def on_connect():
     """function for user connected to server"""
     print('User connected!')
+    return'connected'
 
 
 @SOCKETIO.on('disconnect')
 def on_disconnect():
     """function for user disconnected from server"""
     print('User disconnected!')
+    return 'disconnected'
 
 
 @SOCKETIO.on('Logins')
@@ -95,6 +97,7 @@ def on_connection1(data):
     print(PLAYER1, "is X")
     print(PLAYER2, "is O")
     print(SPECTATORS, " are spectating the game")
+    return LOGINS
 def add_user(username):
     """ To create the user and put them in the database"""
     db_names = []
@@ -130,12 +133,26 @@ def winner(data):
     """ Determines if ther player is a winner and maps it to the database """
     global WIN, LOSS
     print(str(data))
-    users = []
-    scores = []
 
     #winner = models.Joined.query.filter_by(username=data['winner']).first()
     #loser = models.Joined.query.filter_by(username=data['loser']).first()
 
+    users, scores = add_winning_user(data)
+    SOCKETIO.emit("User_List", {'users': users, 'score': scores})
+
+    print(users)
+    print(scores)
+
+    WIN.append(str(data['winner']))
+    print(WIN)
+    LOSS.append(str(data['loser']))
+    print(LOSS)
+
+    SOCKETIO.emit('Winner', data, broadcast=True, include_self=True)
+    return str(data['winner'])
+def add_winning_user(data):
+    users = []
+    scores = []
     win = DB.session.query(
         models.Joined).filter_by(username=data['winner']).first()
     loser = DB.session.query(
@@ -159,18 +176,7 @@ def winner(data):
     for people in all_people:
         users.append(people.username)
         scores.append(people.score)
-    SOCKETIO.emit("User_List", {'users': users, 'score': scores})
-
-    print(users)
-    print(scores)
-
-    WIN.append(str(data['winner']))
-    print(WIN)
-    LOSS.append(str(data['loser']))
-    print(LOSS)
-
-    SOCKETIO.emit('Winner', data, broadcast=True, include_self=True)
-    return str(data['winner'])
+    return users, scores
 
 @SOCKETIO.on('Draw')
 def draw(data):
