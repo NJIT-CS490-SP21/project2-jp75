@@ -1,3 +1,5 @@
+""" If this doesn't work drag it out to the level o the app.py file"""
+
 import app
 import unittest
 
@@ -19,6 +21,7 @@ class TestReset(unittest.TestCase):
         result = app.reset(data)
         #print(result)
         self.assertIs(result, 'Reset')
+
 
 """ Testing if function draw receives """
 class TestDraw(unittest.TestCase):

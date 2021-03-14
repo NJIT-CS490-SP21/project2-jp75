@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
-import turn from './App';
 
 test('Login button disappears', () => {
    const result = render(<App />);
@@ -13,14 +12,14 @@ test('Login button disappears', () => {
 });
 
 
-test('Tests to see if text field disappears after login button is clicked', () => {
+test('Tests to see the value of the input', () => {
     const result = render(<App />);
     
     const loginButtonElement = screen.getByText('Login');
     const Textfield = screen.getByPlaceholderText('username')
-    expect(Textfield).toBeInTheDocument();
-    fireEvent.click(loginButtonElement);
-    expect(Textfield).toBeInTheDocument();
+    expect(Textfield.closest("input").value).toEqual("")
+    
+    
 });
 
 test('is the board empty?', () => {

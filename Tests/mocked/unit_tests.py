@@ -1,3 +1,5 @@
+""" If this doesn't work drag it out to the level o the app.py file"""
+
 from app import APP, SOCKETIO
 import unittest
 import unittest.mock as mock
@@ -7,7 +9,7 @@ import sys
 
 sys.path.append(os.path.abspath('../'))
 
-from app import add_user
+from app import add_user_name
 from app import winner
 from app import on_connection1,on_disconnect, on_connect
 import models
@@ -24,7 +26,6 @@ class AddUserTestCase(unittest.TestCase):
                 KEY_INPUT: 'Test101',
                 KEY_EXPECTED: [INITIAL_USERNAME, 'Test101'],
             },
-            
         ]
         
         inial_joined = models.Joined(username=INITIAL_USERNAME)
@@ -45,23 +46,21 @@ class AddUserTestCase(unittest.TestCase):
     
     def test_success(self):
         for test in self.success_test_params:
-            with patch('models.Joined.query') as mocked_filter:
-                mocked_filter.filter_by = self.mocked_person_query_filter
-                exists = False
-                with patch('app.DB.session.add', self.mocked_db_session_add):
-                    with patch('app.DB.session.commit', self.mocked_db_session_commit):
-                        with patch('models.Joined.query') as mocked_query:
-                            mocked_query.all = self.mocked_person_query_all
+            with patch('app.DB.session.add', self.mocked_db_session_add):
+                with patch('app.DB.session.commit', self.mocked_db_session_commit):
+                    with patch('models.Joined.query') as mocked_query:
+                        mocked_query.all = self.mocked_person_query_all
                         
-                            print(self.initial_db_mock)
-                            actual_result = add_user(test[KEY_INPUT])
-                            print(actual_result)
-                            expected_result = test[KEY_EXPECTED]
-                            print(self.initial_db_mock)
-                            print(expected_result)
+                        print(self.initial_db_mock)
+                        actual_result = add_user_name(test[KEY_INPUT])
+                        print(actual_result)
+                        expected_result = test[KEY_EXPECTED]
+                        print(self.initial_db_mock)
+                        print(expected_result)
                         
-                            self.assertEqual(len(actual_result),len(expected_result))
-                            self.assertEqual(actual_result,expected_result[1])
+                        self.assertEqual(len(actual_result),len(expected_result))
+                        self.assertEqual(actual_result[1],expected_result[1])
+                        
 Winner =  "input"              
     
    
@@ -116,8 +115,11 @@ def socketio_test1():
     assert not result1[0] == result2[1]
     assert not result3[2] == result2[1]
     assert not result3[2] == result1[0]
-
+    #since we receive the return we could see that the function emitted back to the client
+    
 if __name__ == '__main__':
     unittest.main()
     #socketio_test()
     #socketio_test1()
+    #to test all of these effectively you need to keep comments
+    

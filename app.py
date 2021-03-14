@@ -110,16 +110,20 @@ def add_user(username):
     print(exists)
     flag = True  #pylint explained that this was the best practice
     if exists != flag:  #gets if user is already in DB
-        DB.session.add(new_user)
-        DB.session.commit()
+        add_user_name(new_user)
 
-    all_people = models.Joined.query.all()
     all_people = models.Joined.query.order_by(models.Joined.score.desc()).all()
     for people in all_people:
         db_names.append(people.username)  #appends username to database
         db_scores.append(people.score)
     return db_names, db_scores
-
+    
+def add_user_name(new_user):
+    DB.session.add(new_user)
+    DB.session.commit()
+    all_people = models.Joined.query.all()
+    return all_people
+    
 @SOCKETIO.on('Reset')
 def reset(data):
     """ Sends info that reset button was clicked back to client """
