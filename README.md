@@ -1,5 +1,5 @@
 ##Clone repository
-1.` git clone --branch milestone_2 https://github.com/NJIT-CS490-SP21/project2-jp75 ``
+1.` git clone https://github.com/NJIT-CS490-SP21/project2-jp75 `
 
 
 ## Requirements
