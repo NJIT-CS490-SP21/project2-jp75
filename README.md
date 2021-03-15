@@ -9,6 +9,9 @@
 4. `Flask-SocketIO==5.0.1`
 5. `Flask-SQLAlchemy==2.1`
 6. `psycopg2`
+7. `yapf==0.30.0`
+8. `pylint==2.4.4`
+9. `npm install --save-dev --save-exact prettier`
 7. `pip install -r requirements.txt` -this could be done to match all files that I have to ensure it will run
 
 # Flask and create-react-app
@@ -29,19 +32,38 @@
 2. Run command in another terminal, `cd` into the project directory, and run `npm run start`
 3. Preview web page in browser '/'
 
-## Deploy to Heroku ap (not necessary)
-1. make sure heroku still has th other app
-2. Add python buildpack `heroku buildpacks:add --index 1 heroku/python` or add it on herokus website
-3. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs` or add it on herokus website
-4. Push to Heroku: `git push heroku {your_branch_name}:main` or `git push heroku main` if you want to put it in your main branch
+## Testing app.py
+1. navigate to Tests/unmocked and drag the file to the same level as app.py
+2. run the unit_tests.py file to see that tests pass.(You could add some tests if further wanting to test)
+3. put file back in unmocked and do the same with mocked.
+
+# Test App.js
+1. navigate to src folder and look for App.test.js
+2. in order to test this open up a terminal and change into the directory of the project
+3. type in `npm test App.test.js` and you will be able to see that all tests pass. (add more tests if you want)
+
+## Check linting
+1. Type in `pylint app.py` and see that all linting errors are fixed
+2. Type in `npx eslint src/App.js` to see airbnb eslint satisfied
+3. Type in `npx eslint src/board.js` to see that meets satisfied as well
+
+## Deploy to Heroku app (not necessary)
+1. Make sure you don't have any heroku files saved by typing `git remote -v`
+2. If there is already a heroku app type `git remote rm heroku`
+3. Create a new heroku app
+4. Add python buildpack `heroku buildpacks:add --index 1 heroku/python` or add it on herokus website
+5. Add nodejs buildpack: `heroku buildpacks:add --index 1 heroku/nodejs` or add it on herokus website
+6. Push to Heroku: `git push heroku main` if you want to put it in your main branch
+
+## format files
+1. Files have been formatted already, but if you want to reformat them type `yapf -i app.py` to format the python file
+2. To format .js files type in `npx prettier --write src/App.js`. Do this for all .js files (This gave me an issue trying to work with airbn eslint)
 
 ## Two known problems
-1. I had an issue with trying to get the user who logs in to display on the table. I couldn't figure out how to do it. If I had more time I would definitely try to accomplish that by maybe going through the list on the table and comparing names to logged in players and if the player happend to be a logged in player than I  could change something with the name in css, but the issue I as trying to solve was going through the list of mapped users and altering one person out of all the players in the database.
-2. There seems to be something wrong when a players log in sometimes. When the game starts and a random person joins in mid game sometimes it brings them into their own game and says that no one is player x or player o. I'm not sure if this is an issue on my side or just a genral issue working with servers, but if I had more time I would definitely put work in that area to try and make the server able to always connect the jooining user to the current match thats going on. I'm not sure if this might be on the server side, or the client side but maybe proper steps would be to see if the server is emitting the list of players that are currently logged ion when a new player joins mid gam and then work off of that.
+1. I had an issue trying to run certain unmocked tests. If I had more time I would definitely put time into understanding the concepts. One that I was having issues mocking was filter_by(). I'm assuming if I were to do something like this with patch('models.Joined.query') as mocked_query: and usee another defined function to mock up the filter than I could get this done, but was having issues getting it to work.
+2. I had some issues trying to make some test cases using jest. One issue that I couldn't resolve, but wish I had more time to figure out was tring to get my rest button to work by getByText. It kept giving me an error I think because my code wasn't in the format that get the text. I'm assuming my html code wasn't seperated in funtions, or I should've done that, but instead I made divs and put code inside not really keeping track of where I put everything. I learned that it's important to keep track of where your code is going. 
 
 ## Issues resolved
-1. I had an issue trying to update the database whenever a player won or lost. I would get it to update the first time, but then it wouldn't update the second or third time. The fix ot this was that I was using models.user.query when I was suppsoed to be using DB.session.query. This seemed to fix the issue as it wasn't changing the values in the databse it was just chenging the name of the user, which wasn't doing anything to change the database.
-2. Another issue I was having was when a new person would join in it would change everrything back to 100 on the leaderboard. The fix to this was kind of similar, but I wasn't updating the database after I made a change to the score. A temporary fix was to use .merge which worked when a new user joined to not change everything back to 100, but there seemed to be some issues with this because it wouldn't update on a restart. Later I found out that .merge wasn't a good solution for a continuos game. The real solution was sort of the same as the above solution in #1, but .merge was the solution at the first time I had the issue.
-3. When I first started trying to create my database I kept having an issue where it was giving me an error with the models.py file saying Person does not exist. To fix this I followed the hw 11 assignment where I had to set up and test the database and see if it worked which it did. I later found out that my Database URL was wrong and I ended up spending hours trying to fix this. Once I got the corrected URL I put it in the .env an it seemed to work. 
-
+1. I had an issue trying to run unmock tests on my db in unittests.py. The issue I had with this was that it wouldn't see if the user was already in the database. I'm assuming I wasn't writing the right code to mock the filterBy(). The way I solved this was by moving that filterBy() outside of my mtehod and got it to work without the filterBy() in the function.
+2. I had an issue trying to get airbnb to work. The way I wen't about it was to follow that github file explaining how to go about it and finally got it to work. I amde a .eslintrc file and put "extends": ["airbnb", "airbnb/hooks"] which seemed to get it to work. THis then gave me 200+ errors that I was confused over and wasn't sure if I was doing it right. I was hving trouble trying to get certain errors to go away, and ended up googling a lot to get things to work right. Some things that I had to change were changing ++ to += 1 insead all "" nedded to be changed to '',etc. This took me over 3 hours to figure it out, but I finally did and learned a lot.
 
